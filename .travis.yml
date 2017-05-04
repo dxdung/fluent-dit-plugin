@@ -1,0 +1,33 @@
+sudo: false
+language: ruby
+
+addons:
+  postgresql: "9.4"
+
+rvm:
+  - 2.0
+  - 2.1
+  - 2.2.4
+  - 2.3.1
+  - 2.4.1
+  - ruby-head
+
+gemfile:
+ - Gemfile
+ - Gemfile.v0.12
+
+before_install:
+  - gem install bundler
+
+before_script:
+  - psql -U postgres -c "CREATE ROLE fluentd WITH LOGIN ENCRYPTED PASSWORD 'fluentd';"
+  - psql -U postgres -c "CREATE DATABASE fluentd_test OWNER fluentd;"
+
+script: bundle exec rake test
+
+matrix:
+  allow_failures:
+    - rvm: ruby-head
+  exclude:
+    - rvm: 2.0
+      gemfile: Gemfile
